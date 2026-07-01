@@ -1,11 +1,20 @@
 import React from "react";
 import Button from "../components/Button";
+import { useNavigate } from "react-router-dom";
 
-const Home = () => {
+const Home = ({ onButtonClick }) => {
   // logic
+  // react-router-dom으로 페이지 이동하는 두가지 방법
+  // 1. button
+  const history = useNavigate();
 
+  // 2. Link
   const handleStart = () => {
-    console.log("info페이지로 이동");
+    // console.log("info 페이지로 이동");
+    history("/info"); // nabigator로 바로 이동
+
+    // App에서 전달받은 페이지 이동 함수 실행
+    //onButtonClick();
   };
 
   // view
