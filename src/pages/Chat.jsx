@@ -13,18 +13,57 @@ const Chat = ({ ingredientList }) => {
   // TODO: set함수 추가하기
   const [messages, setMessages] = useState([]); // chatGPT와 사용자의 대화 메시지 배열
   const [infoMessages, setInfoMessages] = useState([]); // 초기세팅 메세지/ system, user, assistant 메시지 배열
-  const [isInfoLoading] = useState(false); // 최초 정보 요청시 로딩
-  const [isMessageLoading, setIsMessageLoading] = useState(true); // 사용자와 메시지 주고 받을때 로딩
+  const [isInfoLoading, setIsInfoLoading] = useState(true); // 최초 정보 요청시 로딩
+  const [isMessageLoading, setIsMessageLoading] = useState(false); // 사용자와 메시지 주고 받을때 로딩
 
   const hadleChange = (event) => {
     const { value } = event.target;
-    console.log("value==>", value);
+    // console.log("value==>", value);
     setValue(value);
+  };
+
+  const sendMessage = async (userMessage, allMessages) => {
+    setIsMessageLoading(true);
+    try {
+      const response = await fetch(`${endpoint}/message`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userMessage,
+          messages: allMessages,
+        }),
+      });
+
+      const result = await response.json();
+
+      // chatGPT의 답변 추가
+      const { role, content } = result.data;
+      const assistantMessage = { role, content };
+      setMessages((prev) => [...prev, assistantMessage]);
+
+      // console.log("🚀 ~ sendMessage ~ result:", result);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      // try 혹은 error 구문 실행후 실행되는 곳
+      setIsMessageLoading(false);
+    }
   };
 
   const hadleSubmit = (event) => {
     event.preventDefault();
-    console.log("메시지 보내기");
+    // console.log("메시지 보내기");
+
+    // 1. userMessage 현재 사용자가 입력한 메시지 정보
+    const userMessage = { role: "user", content: value.trim() };
+
+    // 2. message 기존대화목록
+    const allMessages = [...infoMessages, ...messages];
+    // state관리
+    setMessages((prev) => [...prev, userMessage]);
+    setValue(""); // 입력 메세지박스 초기화
+    //  api 호출
+    sendMessage(userMessage, allMessages);
   };
 
   //recipe API
@@ -41,7 +80,7 @@ const Chat = ({ ingredientList }) => {
 
       // JOSN >  자바스크립트 객체로 변환
       const result = await response.json();
-      console.log("🚀 ~ sendInfo ~ result:", result);
+      // console.log("🚀 ~ sendInfo ~ result:", result);
 
       // 데이터가 잘 들어오지 않은경우는 뒷코드 실행안함
       if (!result.data) return;
@@ -61,6 +100,8 @@ const Chat = ({ ingredientList }) => {
       setMessages((prev) => [...prev, { role, content }]);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsInfoLoading(false);
     }
   };
 
@@ -70,34 +111,6 @@ const Chat = ({ ingredientList }) => {
     // console.log("🚀 ~ Chat ~ ingredientList:", ingredientList);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // 뒤에 []를 빈값으로 두면 최초 진입시에 딱 한번만 실행된다. 그외는 state 감시용으로 사용
-
-  const sendMessage = async (userMessage) => {
-    setIsMessageLoading(true);
-    try {
-      const response = await fetch(`${endpoint}/message`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userMessage,
-          messages: [...infoMessages, ...messages],
-        }),
-      });
-
-      const result = await response.json();
-
-      // chatGPT의 답변 추가
-      const { role, content } = result.data;
-      const assistantMessage = { role, content };
-      setMessages((prev) => [...prev, assistantMessage]);
-
-      console.log("🚀 ~ sendMessage ~ result:", result);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      // try 혹은 error 구문 실행후 실행되는 곳
-      setIsMessageLoading(false);
-    }
-  };
 
   // view
   return (
