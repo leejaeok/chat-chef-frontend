@@ -3,9 +3,11 @@ import PrevButton from "../components/PrevButton";
 import InfoInput from "../components/InfoInput";
 import AddButton from "../components/AddButton";
 import Button from "../components/Button";
+import { useNavigate } from "react-router-dom";
 // import { useNavigate } from "react-router-dom";
 
 const Info = ({ sendIngredientList }) => {
+  const history = useNavigate();
   // logic
   //const nextChatMove = useNavigate();
 
@@ -51,6 +53,20 @@ const Info = ({ sendIngredientList }) => {
     //     // ingredientList: ingredientList, id, value의 이름이 같으면 축약해서 쓸수 있다.
     //   },
     // });
+
+    // 입력값이 있는 배열
+    const filterDataList = ingredientList.filter(
+      (item) => item.value.trim() !== "",
+    );
+    console.log("🚀filterDataList:", filterDataList);
+    if (filterDataList.length) {
+      // 재료 입력값이 있는 경우
+      history("/chat");
+      return;
+    }
+
+    // 재료 입력값이 없는 경우
+    alert("재료를 최소 1개이상 입력해주세요");
   };
 
   // view
