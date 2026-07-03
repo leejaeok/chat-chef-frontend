@@ -3,11 +3,11 @@ import PrevButton from "../components/PrevButton";
 import InfoInput from "../components/InfoInput";
 import AddButton from "../components/AddButton";
 import Button from "../components/Button";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
-const Info = () => {
+const Info = ({ sendIngredientList }) => {
   // logic
-  const nextChatMove = useNavigate();
+  //const nextChatMove = useNavigate();
 
   // TODO: set함수 추가하기
   const [ingredientList, setIngredientList] = useState([]); // 사용자가 입력할 재료 목록
@@ -43,13 +43,14 @@ const Info = () => {
 
   const handleNext = () => {
     // console.log("chat페이지로 이동");
-    console.log("ingredientList", ingredientList);
-    nextChatMove("/chat", {
-      state: {
-        ingredientList,
-        // ingredientList: ingredientList, id, value의 이름이 같으면 축약해서 쓸수 있다.
-      },
-    });
+    // console.log("ingredientList", ingredientList);
+    sendIngredientList(ingredientList);
+    // nextChatMove("/chat", {
+    //   state: {
+    //     ingredientList,
+    //     // ingredientList: ingredientList, id, value의 이름이 같으면 축약해서 쓸수 있다.
+    //   },
+    // });
   };
 
   // view
