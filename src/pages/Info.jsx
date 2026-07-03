@@ -44,7 +44,12 @@ const Info = () => {
   const handleNext = () => {
     // console.log("chat페이지로 이동");
     console.log("ingredientList", ingredientList);
-    nextChatMove("/chat");
+    nextChatMove("/chat", {
+      state: {
+        ingredientList,
+        // ingredientList: ingredientList, id, value의 이름이 같으면 축약해서 쓸수 있다.
+      },
+    });
   };
 
   // view
